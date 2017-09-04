@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sys
 
 from pysteamcli.app_manifest import parse_acf_file
 
@@ -71,11 +72,18 @@ def main():
             print(name)
 
     if namespace.run:
-        command = '{steamexe} steam://rungameid/{appid}'.format(
-            steamexe=namespace.steamexe,
-            appid=games[namespace.run]
-        )
+        try:
+            command = '{steamexe} steam://rungameid/{appid}'.format(
+                steamexe=namespace.steamexe,
+                appid=games[namespace.run]
+            )
+        except KeyError:
+            print('Error: {} not found!'.format(namespace.run), file=sys.stderr)
+            return 1
+
         os.system(command)
 
+    return 0
+
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
