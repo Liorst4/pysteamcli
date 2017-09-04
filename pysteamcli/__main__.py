@@ -12,6 +12,13 @@ DEFAULT_STEAM_DIR = (
     os.path.join(os.environ['HOME'], '.local', 'share', 'Steam')
 )
 
+DEFAULT_STEAM_EXE = (
+    os.path.join('C:/', 'Program Files (x86)', 'Steam', 'steam.exe')
+    if os.name == 'nt' else
+    'steam'
+)
+
+
 
 def get_games(steamapps_dir):
 
@@ -19,7 +26,7 @@ def get_games(steamapps_dir):
     for item in os.listdir(steamapps_dir):
         if item.endswith('.acf'):
             manifest = parse_acf_file(os.path.join(steamapps_dir, item))
-            result[manifest['AppState']['appid']] = manifest['AppState']['name']
+            result[manifest['AppState']['name']] = manifest['AppState']['appid']
     return result
 
 
@@ -35,6 +42,12 @@ def main():
         help='The installation directory of Steam.',
         default=DEFAULT_STEAM_DIR
     )
+    parser.add_argument(
+        '--steamexe',
+        type=str,
+        help='',
+        default=DEFAULT_STEAM_EXE
+    )
 
     command_group = parser.add_mutually_exclusive_group(required=True)
     command_group.add_argument(
@@ -43,13 +56,26 @@ def main():
         action='store_true',
         help='List all the games currently installed.'
     )
+    command_group.add_argument(
+        '-r',
+        '--run',
+        type=str,
+        help='Game to run.'
+    )
 
     namespace = parser.parse_args()
     games = get_games(os.path.join(namespace.steamdir, 'steamapps'))
 
     if namespace.list:
-        for (_, name) in games.items():
+        for (name, _) in games.items():
             print(name)
+
+    if namespace.run:
+        command = '{steamexe} steam://rungameid/{appid}'.format(
+            steamexe=namespace.steamexe,
+            appid=games[namespace.run]
+        )
+        os.system(command)
 
 if __name__ == "__main__":
     main()
