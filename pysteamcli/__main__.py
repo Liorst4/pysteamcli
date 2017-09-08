@@ -47,7 +47,7 @@ def main():
     parser.add_argument(
         '--steamexe',
         type=str,
-        help='',
+        help='The path to Steam\'s executable.',
         default=DEFAULT_STEAM_EXE
     )
 

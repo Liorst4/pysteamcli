@@ -1,1 +1,7 @@
 Use Steam from the comfort of your terminal :)
+
+List installed games:
+    python -m pysteamcli -l
+
+Launch a game:
+    python -m pysteamcli -r <GAME NAME>
