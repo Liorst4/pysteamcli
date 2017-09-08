@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 
 from pysteamcli.app_manifest import parse_acf_file
@@ -14,7 +15,7 @@ DEFAULT_STEAM_DIR = (
 )
 
 DEFAULT_STEAM_EXE = (
-    os.path.join('C:/', 'Program Files (x86)', 'Steam', 'steam.exe')
+    os.path.join(DEFAULT_STEAM_DIR, 'steam.exe')
     if os.name == 'nt' else
     'steam'
 )
@@ -73,15 +74,14 @@ def main():
 
     if namespace.run:
         try:
-            command = '{steamexe} steam://rungameid/{appid}'.format(
-                steamexe=namespace.steamexe,
+            rungame = 'steam://rungameid/{appid}'.format(
                 appid=games[namespace.run]
             )
         except KeyError:
             print('Error: {} not found!'.format(namespace.run), file=sys.stderr)
             return 1
 
-        os.system(command)
+        return subprocess.call((namespace.steamexe, rungame))
 
     return 0
 
